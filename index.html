@@ -1,0 +1,108 @@
+<!doctype html>
+<html ng-app="paxosSimApp">
+<head>
+    <title>Paxos Simulator</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular-animate.min.js"></script>
+
+    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+
+    <script src="BodyController.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="app.css">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+</head>
+
+
+<body ng-controller="BodyController" ng-keypress="handleKeyPresses($event)">
+
+<button ng-click="stepAllNodes()">All Step (or 's' on keyboard)</button>
+<button ng-click="reset()">Reset (or 'r' on keyboard)</button>
+
+
+<p>Cluster state: {{clusterState}}</p>
+<div ng-repeat="node in nodes" class="animated">
+    <div style="border: 2px solid black; display:inline-block; width: 200px">
+        <table style="border: 1px solid black">
+            <tr>
+                <td ng-style="node.color">Node</td>
+                <td>{{node.node}}</td>
+            </tr>
+            <tr>
+                <td>Value</td>
+                <td>{{node.value}}</td>
+            </tr>
+            <tr>
+                <td>Ballet</td>
+                <td>{{node.ballet}}</td>
+            </tr>
+        </table>
+
+        <table style="border: 1px solid black">
+            <tr>
+                <td>Proposed value</td>
+                <td><input ng-model="valueToPropose" type="text" style="width: 30px"/><br></td>
+            </tr>
+            <tr></tr>
+            <td></td>
+            <td><button ng-click="propose(valueToPropose, node.node)"/>Propose</td>
+        </table>
+
+
+        <table ng-show="node.proposeState" style="border: 1px solid black">
+            <tr>
+                <td>Ballet</td>
+                <td>{{node.proposeState.ballet}}</td>
+            </tr>
+            <tr>
+                <td>Proposing Value</td>
+                <td>{{node.proposeState.proposal}}</td>
+            </tr>
+            <tr>
+                <td>Highest Ballet Seen</td>
+                <td>{{node.proposeState.highestBalletResponse}}</td>
+            </tr>
+            <tr>
+                <td>Promises</td>
+                <td>{{node.proposeState.promises}}</td>
+            </tr>
+            <tr>
+                <td>Quorum</td>
+                <td>{{node.proposeState.quorum}}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div ng-repeat="msg in node.msgs" style="display: inline-block; border: 1px solid black;" class="animated">
+        <div ng-class="msg.messageId">
+            <table>
+                <tr>
+                    <td></td>
+                    <td><button ng-click="dropMessage(node, msg)">Drop Message</button></td>
+                </tr>
+                <tr>
+                    <td ng-style="nodes[msg.source].color">Source</td>
+                    <td>{{msg.source}}</td>
+                </tr>
+                <tr>
+                    <td>Type</td>
+                    <td>{{msg.type}}</td>
+                </tr>
+                <tr ng-show="msg.ballet">
+                    <td>Ballet</td>
+                    <td>{{msg.ballet}}</td>
+                </tr>
+                <tr ng-show="msg.value">
+                    <td>Value</td>
+                    <td>{{msg.value}}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <br>
+    <br>
+</div>
+
+</body>
+</html>
